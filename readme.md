@@ -1,6 +1,11 @@
-В README достаточно указать:
-название + описание проекта
+# Todoist #
+## Дипломный проект ##
+### Cтек (python3.10, Django, Postgres) ###
+1. Install requirements:  
+    < pip install -r requirements.txt >
+2. Create .env file with constants:
+    >SECRET_KEY  
+DEBUG  
+DATABASE_URL
 
-стек (python3.9, Django, Postgres)
 
-как запустить (установить зависимости, заполнить .env + какими значениями, накатить миграции, запустить проект)
