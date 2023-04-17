@@ -20,7 +20,9 @@ services:
       interval: 3s
 
   api:
-    build: .
+    build:
+      context: "."
+      dockerfile: "./Dockerfile.dev"
     env_file: .env
     environment:
       POSTGRES_HOST: db
@@ -35,7 +37,7 @@ services:
       - django_static:/opt/static/
 
   frontend:
-    image: sermalenk/skypro-front:lesson-34
+    image: sermalenk/skypro-front:lesson-35
     ports:
       - "80:80"
     depends_on:
