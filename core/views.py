@@ -1,6 +1,9 @@
+from typing import Any
+
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 from rest_framework import generics, status
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.exceptions import AuthenticationFailed
@@ -20,17 +23,17 @@ from rest_framework.permissions import IsAuthenticated
 class SingUpView(generics.GenericAPIView):
     serializer_class = CreateUserSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args: tuple, **kwargs) -> Response:
         serializer: Serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = User.objects.create_user(**serializer.data)
+        user: User = User.objects.create_user(**serializer.data)
         return Response(ProfileSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs) -> Response:
         serializer: Serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -52,10 +55,10 @@ class ProfileView(generics.RetrieveUpdateDestroyAPIView):
         IsAuthenticated,
     ]
 
-    def get_object(self):
+    def get_object(self) -> User:
         return self.request.user
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs) -> status.HTTP_204_NO_CONTENT:
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -66,7 +69,7 @@ class UpdatePasswordView(generics.GenericAPIView):
         IsAuthenticated,
     ]
 
-    def put(self, request, *args, **kwargs):
+    def put(self, request: Request, *args, **kwargs) -> Response:
         serializer: Serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user: User = request.user

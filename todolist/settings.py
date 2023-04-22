@@ -46,9 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third-party apps
     'rest_framework',
+    'django_filters',
     'social_django',
     # First-part apps
     'core',
+    'goals',
 ]
 
 if DEBUG:
@@ -157,3 +159,8 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
