@@ -33,11 +33,12 @@ services:
       - "8000:8000"
     volumes:
       - ./core:/opt/core
+      - ./goals:/opt/goals
       - ./todolist:/opt/todolist
       - django_static:/opt/static/
 
   frontend:
-    image: sermalenk/skypro-front:lesson-35
+    image: sermalenk/skypro-front:lesson-36
     ports:
       - "80:80"
     depends_on:

@@ -35,7 +35,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             'password_repeat',
         )
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict) -> dict | ValidationError:
         if attrs.get('password') != attrs.get('password_repeat'):
             return ValidationError('Passwords must match')
         return attrs
