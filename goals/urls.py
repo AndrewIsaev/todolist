@@ -2,6 +2,10 @@ from django.urls import path
 from goals import views
 
 urlpatterns = [
+    # Boards
+    path('board/create', views.BoardCreateView.as_view(), name='board-create'),
+    path('board/list', views.BoardListView.as_view(), name='board-list'),
+    path('board/<int:pk>', views.BoardDetailView.as_view(), name='board'),
     # Category
     path(
         'goal_category/create',
