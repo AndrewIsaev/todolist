@@ -48,6 +48,7 @@ class BoardParticipant(models.Model):
     updated = models.DateTimeField(
         verbose_name='Дата последнего обновления', auto_now_add=True
     )
+    editable_choices = Role.choices[1:]
 
 
 class GoalCategory(models.Model):
