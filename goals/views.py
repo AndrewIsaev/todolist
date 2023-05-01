@@ -88,7 +88,7 @@ class GoalListView(generics.ListAPIView):
     def get_queryset(self) -> QuerySet:
         return (
             Goal.objects.select_related('user')
-            .filter(user=self.request.user, category__is_deleted=False)
+            .filter(category__is_deleted=False)
             .exclude(status=Goal.Status.archived)
         )
 
@@ -100,7 +100,7 @@ class GoalView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self) -> QuerySet:
         return (
             Goal.objects.select_related('user')
-            .filter(user=self.request.user, category__is_deleted=False)
+            .filter(category__is_deleted=False)
             .exclude(status=Goal.Status.archived)
         )
 
@@ -116,18 +116,14 @@ class GoalCommentCreateView(generics.CreateAPIView):
 
 class GoalCommentListView(generics.ListAPIView):
     serializer_class = GoalCommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CommentPermission]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['goal']
     ordering_fields = ['created', 'updated']
     ordering = ['-created']
 
     def get_queryset(self) -> QuerySet:
-        return (
-            GoalComment.objects.select_related('user')
-            .filter(user=self.request.user)
-            .exclude(goal__status=Goal.Status.archived)
-        )
+        return GoalComment.objects.all().exclude(goal__status=Goal.Status.archived)
 
 
 class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
