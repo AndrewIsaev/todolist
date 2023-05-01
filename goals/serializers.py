@@ -52,8 +52,8 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         if value.is_deleted:
             raise ValidationError('Category not found')
 
-        if self.context['request'].user.id != value.user_id:
-            raise PermissionDenied
+        # if self.context['request'].user.id != value.user_id:
+        #     raise PermissionDenied
         return value
 
     def validate_due_date(self, value: datetime) -> datetime:
@@ -79,8 +79,8 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
         if value.status == Goal.Status.archived:
             raise ValidationError('Goal not found')
 
-        if self.context['request'].user.id != value.user_id:
-            raise PermissionDenied
+        # if self.context['request'].user.id != value.user_id:
+        #     raise PermissionDenied
         return value
 
 
