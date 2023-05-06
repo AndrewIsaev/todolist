@@ -3,20 +3,24 @@ from django.db import models
 from core.models import User
 
 
-class Board(models.Model):
+class BaseModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Board(BaseModel):
     class Meta:
         verbose_name = 'Доска'
         verbose_name_plural = 'Доски'
 
     title = models.CharField(verbose_name='Название', max_length=255)
     is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
-    created = models.DateTimeField(verbose_name='Дата создания', auto_now=True)
-    updated = models.DateTimeField(
-        verbose_name='Дата последнего обновления', auto_now_add=True
-    )
 
 
-class BoardParticipant(models.Model):
+class BoardParticipant(BaseModel):
     class Meta:
         unique_together = ('board', 'user')
         verbose_name = 'Участник'
@@ -44,14 +48,10 @@ class BoardParticipant(models.Model):
     role = models.PositiveSmallIntegerField(
         verbose_name='Роль', choices=Role.choices, default=Role.owner
     )
-    created = models.DateTimeField(verbose_name='Дата создания', auto_now=True)
-    updated = models.DateTimeField(
-        verbose_name='Дата последнего обновления', auto_now_add=True
-    )
     editable_choices = Role.choices[1:]
 
 
-class GoalCategory(models.Model):
+class GoalCategory(BaseModel):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
@@ -62,16 +62,12 @@ class GoalCategory(models.Model):
     title = models.CharField(verbose_name='Название', max_length=255)
     user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
-    created = models.DateTimeField(verbose_name='Дата создания', auto_now=True)
-    updated = models.DateTimeField(
-        verbose_name='Дата последнего обновления', auto_now_add=True
-    )
 
     def __str__(self) -> str:
         return self.title
 
 
-class Goal(models.Model):
+class Goal(BaseModel):
     class Meta:
         verbose_name = 'Цель'
         verbose_name_plural = 'Цели'
@@ -101,24 +97,16 @@ class Goal(models.Model):
     priority = models.PositiveSmallIntegerField(
         choices=Priority.choices, default=Priority.medium
     )
-    created = models.DateTimeField(verbose_name='Дата создания', auto_now=True)
-    updated = models.DateTimeField(
-        verbose_name='Дата последнего обновления', auto_now_add=True
-    )
 
     def __str__(self) -> str:
         return self.title
 
 
-class GoalComment(models.Model):
+class GoalComment(BaseModel):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
     user = models.ForeignKey('core.User', on_delete=models.CASCADE)
-    created = models.DateTimeField(verbose_name='Дата создания', auto_now=True)
-    updated = models.DateTimeField(
-        verbose_name='Дата последнего обновления', auto_now_add=True
-    )
     text = models.TextField()
     goal = models.ForeignKey('goals.Goal', on_delete=models.CASCADE)
