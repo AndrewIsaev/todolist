@@ -31,7 +31,9 @@ class GoalCategoryCreateView(generics.CreateAPIView):
 
 
 class GoalCategoryListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
     serializer_class = GoalCategoryListSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
@@ -55,8 +57,8 @@ class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCategoryListSerializer
 
     def get_queryset(self) -> QuerySet:
-        return GoalCategory.objects.select_related('user').filter(
-            user=self.request.user, is_deleted=False
+        return GoalCategory.objects.filter(
+            board__participants__user=self.request.user, is_deleted=False
         )
 
     def perform_destroy(self, instance: GoalCategory) -> None:
@@ -72,7 +74,9 @@ class GoalCreateView(generics.CreateAPIView):
 
 
 class GoalListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
     serializer_class = GoalSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
@@ -116,7 +120,9 @@ class GoalCommentCreateView(generics.CreateAPIView):
 
 class GoalCommentListView(generics.ListAPIView):
     serializer_class = GoalCommentSerializer
-    permission_classes = [permissions.IsAuthenticated, CommentPermission]
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['goal']
     ordering_fields = ['created', 'updated']
@@ -128,7 +134,7 @@ class GoalCommentListView(generics.ListAPIView):
 
 class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CommentPermission]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['goal']
     ordering_fields = ['created', 'updated']
@@ -148,7 +154,7 @@ class BoardCreateView(generics.CreateAPIView):
 
 
 class BoardListView(generics.ListAPIView):
-    permissions = [permissions.IsAuthenticated]
+    permissions = [permissions.IsAuthenticated, BoardPermissions]
     serializer_class = BoardCreateSerializer
     filter_backends = [filters.OrderingFilter]
     ordering = ['title']

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from django.db import transaction
 from django.utils import timezone
@@ -52,11 +52,15 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         if value.is_deleted:
             raise ValidationError('Category not found')
 
-        # if self.context['request'].user.id != value.user_id:
-        #     raise PermissionDenied
+        if not BoardParticipant.objects.filter(
+            board_id=value.board.id,
+            role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+            user_id=self.context['request'].user.id,
+        ).exists():
+            raise PermissionDenied
         return value
 
-    def validate_due_date(self, value: datetime) -> datetime:
+    def validate_due_date(self, value: date) -> date:
         if value:
             if value < timezone.now().date():
                 raise ValidationError('Date in the past')
@@ -79,8 +83,12 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
         if value.status == Goal.Status.archived:
             raise ValidationError('Goal not found')
 
-        # if self.context['request'].user.id != value.user_id:
-        #     raise PermissionDenied
+        if not BoardParticipant.objects.filter(
+            board_id=value.category.board.id,
+            role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+            user_id=self.context['request'].user.id,
+        ).exists():
+            raise PermissionDenied
         return value
 
 
