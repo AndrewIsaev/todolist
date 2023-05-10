@@ -26,8 +26,15 @@ services:
     volumes:
       - django_static:/opt/static/
 
+  bot:
+    image: andrewisaev/skypro_diplom
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+
   frontend:
-    image: sermalenk/skypro-front:lesson-37
+    image: sermalenk/skypro-front:lesson-38
     ports:
       - "80:80"
     depends_on:
