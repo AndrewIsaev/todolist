@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # First-part apps
     'core',
     'goals',
+    'bot',
 ]
 
 if DEBUG:
@@ -164,3 +165,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
+
+
+BOT_TOKEN = env.str(('BOT_TOKEN'))
