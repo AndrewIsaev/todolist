@@ -11,6 +11,10 @@ from goals.models import GoalCategory, Goal, GoalComment, Board, BoardParticipan
 
 
 class GoalCategoryCreateSerializer(serializers.ModelSerializer):
+    """
+    Category create serializer
+    """
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -18,7 +22,12 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created', 'updated', 'user', 'is_deleted')
         fields = '__all__'
 
-    def validate_board(self, board: Board):
+    def validate_board(self, board: Board) -> Board:
+        """
+        Check is board deleted and has user permission
+        :param board: board
+        :return: board or validation error
+        """
         if board.is_deleted:
             raise ValidationError('Board is deleted')
 
@@ -32,10 +41,18 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalCategoryListSerializer(GoalCategoryCreateSerializer):
+    """
+    Category list serializer
+    """
+
     user = ProfileSerializer(read_only=True)
 
 
 class GoalCreateSerializer(serializers.ModelSerializer):
+    """
+    Goal create serializer
+    """
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -49,6 +66,11 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_category(self, value: GoalCategory) -> GoalCategory:
+        """
+        Check is category deleted and ha user permission
+        :param value: category
+        :return: category or permission denied
+        """
         if value.is_deleted:
             raise ValidationError('Category not found')
 
@@ -61,6 +83,11 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate_due_date(self, value: date) -> date:
+        """
+        Check that date was not in the past
+        :param value: date
+        :return: date or validation error
+        """
         if value:
             if value < timezone.now().date():
                 raise ValidationError('Date in the past')
@@ -68,10 +95,18 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalSerializer(GoalCreateSerializer):
+    """
+    Goal serializer
+    """
+
     user = ProfileSerializer(read_only=True)
 
 
 class GoalCommentCreateSerializer(serializers.ModelSerializer):
+    """
+    Comment create serializer
+    """
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -80,6 +115,11 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_goal(self, value: Goal) -> Goal:
+        """
+        Check is goal exist and user permission
+        :param value: goal
+        :return: goal or validation error or permission denied
+        """
         if value.status == Goal.Status.archived:
             raise ValidationError('Goal not found')
 
@@ -93,11 +133,19 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalCommentSerializer(GoalCommentCreateSerializer):
+    """
+    Comment serializer
+    """
+
     user = ProfileSerializer(read_only=True)
     goal = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
 class BoardCreateSerializer(serializers.ModelSerializer):
+    """
+    Board create serializer
+    """
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -106,6 +154,11 @@ class BoardCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+        """
+        Create board and set user to board owner
+        :param validated_data: validated data
+        :return: board
+        """
         user = validated_data.pop('user')
         board = Board.objects.create(**validated_data)
         BoardParticipant.objects.create(
@@ -115,6 +168,10 @@ class BoardCreateSerializer(serializers.ModelSerializer):
 
 
 class BoardParticipantSerializer(serializers.ModelSerializer):
+    """
+    Board participant serializer
+    """
+
     role = serializers.ChoiceField(
         required=True, choices=BoardParticipant.editable_choices
     )
@@ -123,6 +180,11 @@ class BoardParticipantSerializer(serializers.ModelSerializer):
     )
 
     def validate_user(self, user: User) -> User:
+        """
+        Validate that owner can`t change him role
+        :param user: user
+        :return: user or validation error
+        """
         if self.context['request'].user == user:
             raise ValidationError('Owner can`t change him role')
         return user
@@ -134,6 +196,10 @@ class BoardParticipantSerializer(serializers.ModelSerializer):
 
 
 class BoardSerializer(serializers.ModelSerializer):
+    """
+    Board serializer
+    """
+
     participants = BoardParticipantSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -142,7 +208,13 @@ class BoardSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated')
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Board, validated_data) -> Board:
+        """
+        Add users to board participants
+        :param instance: board
+        :param validated_data: validated data
+        :return: board
+        """
         request = self.context['request']
         with transaction.atomic():
             BoardParticipant.objects.filter(board=instance).exclude(

@@ -1,7 +1,4 @@
-from typing import Any
-
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -21,9 +18,20 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class SingUpView(generics.GenericAPIView):
+    """
+    Sing up view
+    """
+
     serializer_class = CreateUserSerializer
 
     def post(self, request: Request, *args: tuple, **kwargs) -> Response:
+        """
+        Create user
+        :param request: request
+        :param args: args
+        :param kwargs: kwargs
+        :return: response
+        """
         serializer: Serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user: User = User.objects.create_user(**serializer.data)
@@ -31,9 +39,20 @@ class SingUpView(generics.GenericAPIView):
 
 
 class LoginView(generics.GenericAPIView):
+    """
+    Login view
+    """
+
     serializer_class = LoginSerializer
 
     def post(self, request: Request, *args, **kwargs) -> Response:
+        """
+        User authentication
+        :param request: request
+        :param args: args
+        :param kwargs: kwargs
+        :return: response
+        """
         serializer: Serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -50,26 +69,46 @@ class LoginView(generics.GenericAPIView):
 
 
 class ProfileView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Profile view
+    """
+
     serializer_class = ProfileSerializer
     permission_classes = [
         IsAuthenticated,
     ]
 
     def get_object(self) -> User:
+        """
+        Get user object from request
+        :return: user
+        """
         return self.request.user
 
     def delete(self, request, *args, **kwargs) -> status.HTTP_204_NO_CONTENT:
+        """Logout"""
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UpdatePasswordView(generics.GenericAPIView):
+    """
+    Update password view
+    """
+
     serializer_class = UpdatePasswordSerializer
     permission_classes = [
         IsAuthenticated,
     ]
 
     def put(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Update password
+        :param request: request
+        :param args: args
+        :param kwargs: kwargs
+        :return: response
+        """
         serializer: Serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user: User = request.user

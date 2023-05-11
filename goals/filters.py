@@ -6,6 +6,10 @@ from goals.models import Goal
 
 
 class GoalDateFilter(rest_framework.FilterSet):
+    """
+    Class with filter settings
+    """
+
     class Meta:
         model = Goal
         fields = {

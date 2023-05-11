@@ -4,6 +4,10 @@ from core.models import User
 
 
 class BaseModel(models.Model):
+    """
+    Base model with created and updated date
+    """
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -12,6 +16,10 @@ class BaseModel(models.Model):
 
 
 class Board(BaseModel):
+    """
+    Board model
+    """
+
     class Meta:
         verbose_name = 'Доска'
         verbose_name_plural = 'Доски'
@@ -21,12 +29,20 @@ class Board(BaseModel):
 
 
 class BoardParticipant(BaseModel):
+    """
+    Board participant model
+    """
+
     class Meta:
         unique_together = ('board', 'user')
         verbose_name = 'Участник'
         verbose_name_plural = 'Участники'
 
     class Role(models.IntegerChoices):
+        """
+        Choices of role
+        """
+
         owner = 1, 'Владелец'
         writer = 2, 'Редактор'
         reader = 3, 'Читатель'
@@ -52,6 +68,10 @@ class BoardParticipant(BaseModel):
 
 
 class GoalCategory(BaseModel):
+    """
+    Coal category model
+    """
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
@@ -68,17 +88,29 @@ class GoalCategory(BaseModel):
 
 
 class Goal(BaseModel):
+    """
+    Goal model
+    """
+
     class Meta:
         verbose_name = 'Цель'
         verbose_name_plural = 'Цели'
 
     class Status(models.IntegerChoices):
+        """
+        Status choices
+        """
+
         to_do = 1, 'К выполнению'
         in_progress = 2, 'В процессе'
         done = 3, 'Выполнено'
         archived = 4, 'Архив'
 
     class Priority(models.IntegerChoices):
+        """
+        Priority choices
+        """
+
         low = 1, 'Низкий'
         medium = 2, 'Средний'
         high = 3, 'Высокий'
@@ -103,6 +135,10 @@ class Goal(BaseModel):
 
 
 class GoalComment(BaseModel):
+    """
+    Goal comment model
+    """
+
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
