@@ -4,6 +4,10 @@ from bot.models import TgUser
 
 
 class TgUserSerializer(serializers.ModelSerializer):
+    """
+    Telegram user serializers
+    """
+
     tg_id = serializers.SlugField(source='chat_id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
 

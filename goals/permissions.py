@@ -2,11 +2,18 @@ from rest_framework import permissions
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 
-from goals.models import BoardParticipant, GoalCategory, Goal, GoalComment
+from goals.models import BoardParticipant, GoalCategory, Goal, GoalComment, Board
 
 
 class BoardPermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    """
+    Class with boards permissions
+    """
+
+    def has_object_permission(
+        self, request: Request, view: GenericAPIView, obj: Board
+    ) -> bool:
+        """Check has user permission for current board"""
         if not request.user.is_authenticated:
             return False
         if request.method in permissions.SAFE_METHODS:
@@ -19,9 +26,14 @@ class BoardPermissions(permissions.BasePermission):
 
 
 class GoalCategoryPermission(permissions.BasePermission):
+    """
+    Class with category permissions
+    """
+
     def has_object_permission(
         self, request: Request, view: GenericAPIView, obj: GoalCategory
-    ):
+    ) -> bool:
+        """Check has user permission for current category"""
         if not request.user.is_authenticated:
             return False
         if request.method in permissions.SAFE_METHODS:
@@ -36,7 +48,14 @@ class GoalCategoryPermission(permissions.BasePermission):
 
 
 class GoalPermission(permissions.BasePermission):
-    def has_object_permission(self, request: Request, view: GenericAPIView, obj: Goal):
+    """
+    Class with goal permissions
+    """
+
+    def has_object_permission(
+        self, request: Request, view: GenericAPIView, obj: Goal
+    ) -> bool:
+        """Check has user permission for current goal"""
         if not request.user.is_authenticated:
             return False
         if request.method in permissions.SAFE_METHODS:
@@ -51,9 +70,14 @@ class GoalPermission(permissions.BasePermission):
 
 
 class CommentPermission(permissions.BasePermission):
+    """
+    Class with comment permissions
+    """
+
     def has_object_permission(
         self, request: Request, view: GenericAPIView, obj: GoalComment
-    ):
+    ) -> bool:
+        """Check has user permission for current comment"""
         if not request.user.is_authenticated:
             return False
         if request.method in permissions.SAFE_METHODS:

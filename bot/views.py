@@ -12,15 +12,26 @@ from bot.tg.client import TgClient
 
 # Create your views here.
 class VerifyUserView(generics.GenericAPIView):
+    """
+    Verify telegram user on site
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TgUserSerializer
 
     def patch(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        """
+        Get verification code and update user in database
+        :param request:
+        :param args:
+        :param kwargs:
+        :return: response
+        """
         serializer: TgUserSerializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         try:
-            tg_user = TgUser.objects.get(
+            tg_user: TgUser = TgUser.objects.get(
                 verification_code=serializer.validated_data.get('verification_code')
             )
         except TgUser.DoesNotExist:

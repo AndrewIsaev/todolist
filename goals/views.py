@@ -26,11 +26,19 @@ from goals.serializers import (
 
 
 class GoalCategoryCreateView(generics.CreateAPIView):
+    """
+    Category create view
+    """
+
     permission_classes = [permissions.IsAuthenticated, GoalCategoryPermission]
     serializer_class = GoalCategoryCreateSerializer
 
 
 class GoalCategoryListView(generics.ListAPIView):
+    """
+    Category list view
+    """
+
     permission_classes = [
         permissions.IsAuthenticated,
     ]
@@ -53,6 +61,10 @@ class GoalCategoryListView(generics.ListAPIView):
 
 
 class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Category retrieve update delete views
+    """
+
     permission_classes = [permissions.IsAuthenticated, GoalCategoryPermission]
     serializer_class = GoalCategoryListSerializer
 
@@ -62,6 +74,11 @@ class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
         )
 
     def perform_destroy(self, instance: GoalCategory) -> None:
+        """
+        If categories were delete, they mark as delete in database
+        :param instance: category
+        :return: none
+        """
         with transaction.atomic():
             instance.is_deleted = True
             instance.save(update_fields=('is_deleted',))
@@ -69,11 +86,19 @@ class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GoalCreateView(generics.CreateAPIView):
+    """
+    Goal create view
+    """
+
     permission_classes = [permissions.IsAuthenticated, GoalPermission]
     serializer_class = GoalCreateSerializer
 
 
 class GoalListView(generics.ListAPIView):
+    """
+    Goal list view
+    """
+
     permission_classes = [
         permissions.IsAuthenticated,
     ]
@@ -98,6 +123,10 @@ class GoalListView(generics.ListAPIView):
 
 
 class GoalView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Goal retrieve update destroy view
+    """
+
     permission_classes = [permissions.IsAuthenticated, GoalPermission]
     serializer_class = GoalSerializer
 
@@ -109,16 +138,29 @@ class GoalView(generics.RetrieveUpdateDestroyAPIView):
         )
 
     def perform_destroy(self, instance: Goal) -> None:
+        """
+        If goals were delete, they mark as archived in database
+        :param instance:
+        :return: none
+        """
         instance.status = Goal.Status.archived
         instance.save(update_fields=('status',))
 
 
 class GoalCommentCreateView(generics.CreateAPIView):
+    """
+    Comment create view
+    """
+
     serializer_class = GoalCommentCreateSerializer
     permission_classes = [permissions.IsAuthenticated, CommentPermission]
 
 
 class GoalCommentListView(generics.ListAPIView):
+    """
+    Comment list view
+    """
+
     serializer_class = GoalCommentSerializer
     permission_classes = [
         permissions.IsAuthenticated,
@@ -133,6 +175,10 @@ class GoalCommentListView(generics.ListAPIView):
 
 
 class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Comment retrieve update destroy view
+    """
+
     serializer_class = GoalCommentSerializer
     permission_classes = [permissions.IsAuthenticated, CommentPermission]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -149,11 +195,19 @@ class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BoardCreateView(generics.CreateAPIView):
+    """
+    Board create view
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = BoardCreateSerializer
 
 
 class BoardListView(generics.ListAPIView):
+    """
+    Board list view
+    """
+
     permissions = [permissions.IsAuthenticated, BoardPermissions]
     serializer_class = BoardCreateSerializer
     filter_backends = [filters.OrderingFilter]
@@ -166,6 +220,10 @@ class BoardListView(generics.ListAPIView):
 
 
 class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Board retrieve update destroy view
+    """
+
     permissions = [permissions.IsAuthenticated, BoardPermissions]
     serializer_class = BoardSerializer
 
@@ -175,6 +233,11 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
     def perform_destroy(self, instance: Board):
+        """
+        If boards were delete, categories mark as delete in database goal mark as archived
+        :param instance: board
+        :return: none
+        """
         with transaction.atomic():
             Board.objects.filter(id=instance.id).update(is_delete=True)
             instance.categories.update(is_delete=True)
