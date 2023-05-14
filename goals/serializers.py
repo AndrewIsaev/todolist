@@ -161,6 +161,8 @@ class BoardCreateSerializer(serializers.ModelSerializer):
         """
         user = validated_data.pop('user')
         board = Board.objects.create(**validated_data)
+        board.is_deleted = False
+        board.save()
         BoardParticipant.objects.create(
             user=user, board=board, role=BoardParticipant.Role.owner
         )
