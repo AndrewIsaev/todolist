@@ -208,7 +208,7 @@ class BoardListView(generics.ListAPIView):
     Board list view
     """
 
-    permissions = [permissions.IsAuthenticated, BoardPermissions]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = BoardCreateSerializer
     filter_backends = [filters.OrderingFilter]
     ordering = ['title']
@@ -224,12 +224,12 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
     Board retrieve update destroy view
     """
 
-    permissions = [permissions.IsAuthenticated, BoardPermissions]
+    permission_classes = [permissions.IsAuthenticated, BoardPermissions]
     serializer_class = BoardSerializer
 
     def get_queryset(self):
-        return Board.objects.filter(participants__user_id=self.request.user.id).exclude(
-            is_deleted=True
+        return Board.objects.prefetch_related('participants__user').filter(
+            is_deleted=False
         )
 
     def perform_destroy(self, instance: Board):
@@ -239,8 +239,8 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         :return: none
         """
         with transaction.atomic():
-            Board.objects.filter(id=instance.id).update(is_delete=True)
-            instance.categories.update(is_delete=True)
+            Board.objects.filter(id=instance.id).update(is_deleted=True)
+            instance.categories.update(is_deleted=True)
             Goal.objects.filter(category__board=instance).update(
                 status=Goal.Status.archived
             )
