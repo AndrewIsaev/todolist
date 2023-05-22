@@ -26,4 +26,6 @@ class TestBoardListView:
         boards = board_factory.create_batch(size=2, with_owner=user)
         response: Response = auth_client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == BoardCreateSerializer(boards, many=True).data
+        assert response.data == sorted(
+            BoardCreateSerializer(boards, many=True).data, key=lambda x: x['title']
+        )
