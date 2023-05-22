@@ -14,7 +14,7 @@ Simple todolist application(task tracker)
 - Choose goal deadline
 - Telegram bot
   - Get own goals using telegram bot
-  - Create goal us
+  - Create goal using telegram bot
 ***
 ## Technology stack
 - Python 3.10.6

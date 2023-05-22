@@ -82,7 +82,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
             raise PermissionDenied
         return value
 
-    def validate_due_date(self, value: date) -> date:
+    def validate_due_date(self, value: date | None) -> date | None:
         """
         Check that date was not in the past
         :param value: date

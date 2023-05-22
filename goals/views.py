@@ -69,9 +69,7 @@ class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCategoryListSerializer
 
     def get_queryset(self) -> QuerySet:
-        return GoalCategory.objects.filter(
-            board__participants__user=self.request.user, is_deleted=False
-        )
+        return GoalCategory.objects.filter(is_deleted=False)
 
     def perform_destroy(self, instance: GoalCategory) -> None:
         """

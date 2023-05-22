@@ -3,6 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.response import Response
 
+from tests.factories import UserFactory, CategoryFactory, BoardParticipantFactory
+
 
 @pytest.mark.django_db()
 class TestCategoryRetrieveView:
@@ -21,12 +23,16 @@ class TestCategoryRetrieveView:
         response: Response = client.get(self.url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_auth_retrieve_view(self, client, category_factory):
+    def test_auth_retrieve_view(
+        self,
+        auth_client,
+        user: UserFactory,
+        goal_category: CategoryFactory,
+        board_participant: BoardParticipantFactory,
+    ):
         """
         Authorized user get category
         """
 
-        category = category_factory.create()
-        client.force_login(category.user)
-        response: Response = client.get(self.url)
+        response: Response = auth_client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
